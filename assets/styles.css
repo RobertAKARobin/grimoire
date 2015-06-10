@@ -1,0 +1,111 @@
+*
+{
+	margin:0;
+	border:0;
+	padding:0;
+	border-collapse:collapse;
+	border-spacing:0;
+	font-size:inherit;
+	font-style:inherit;
+	font-family:inherit;
+	font-weight:inherit;
+  text-decoration:none;
+	color:inherit;
+	background-color:transparent;
+	box-sizing:border-box;
+}
+*:focus
+{
+	outline:0
+}
+body,html
+{
+	width:100%;
+	position:relative;
+  font-family:"Helvetica Neue", Helvetica, sans-serif;
+  background-color:#ccc;
+  font-size:18px;
+}
+html
+{
+  height:100%;
+}
+body
+{
+  min-height:100%;
+}
+div
+{
+  position:relative;
+}
+input, textarea
+{
+  outline:1px dotted #ccc;
+}
+input:focus,
+textarea:focus
+{
+  background-color:#ddd;
+}
+
+body
+{
+  width:90%;
+  max-width:900px;
+  margin:0 auto;
+}
+table
+{
+  width:100%;
+}
+select
+{
+  width:100%;
+  border-bottom:1px dashed #eee;
+  margin:10px 0;
+}
+td
+{
+  vertical-align:top;
+  width:33%;
+}
+tr
+{
+  border-bottom:1px dotted #aaa;
+}
+td:nth-child(1)
+{
+  text-align:right;
+  padding-right:30px;
+}
+a
+{
+  display:inline-block;
+  color:#345;
+  padding:0 .5em;
+  margin:5px;
+  line-height:2em;
+  border:1px solid transparent;
+  border-radius:3px;
+  background-color:#fff;
+}
+td:nth-child(1) a
+{
+  color:black;
+}
+tr:nth-child(odd) a
+{
+  background-color:#dde;
+}
+a:hover
+{
+  border-color:#345;
+}
+
+p
+{
+  font-size:12px;
+  line-height:1.2em;
+  color:#666;
+  margin:5px;
+}
