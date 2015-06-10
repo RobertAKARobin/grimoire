@@ -67,7 +67,6 @@ select
 td
 {
   vertical-align:top;
-  width:33%;
 }
 tr
 {
@@ -77,6 +76,7 @@ td:nth-child(1)
 {
   text-align:right;
   padding-right:30px;
+  width:33%;
 }
 a
 {
