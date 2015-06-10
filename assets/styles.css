@@ -80,7 +80,7 @@ td:nth-child(1)
 }
 a
 {
-  display:inline-block;
+  display:block;
   color:#345;
   padding:0 .5em;
   margin:5px;
@@ -88,6 +88,10 @@ a
   border:1px solid transparent;
   border-radius:3px;
   background-color:#fff;
+}
+table a
+{
+  display:inline-block;
 }
 td:nth-child(1) a
 {
