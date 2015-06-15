@@ -80,24 +80,22 @@ td:nth-child(1)
 }
 a
 {
+  display:inline-block;
   color:#345;
   margin:5px;
   line-height:2em;
   height:2em;
+  min-width:2em;
   border:1px solid transparent;
   border-radius:3px;
+  padding:0 .5em;
   background-color:#fff;
   overflow:hidden;
+  cursor:pointer;
 }
 h1 a
 {
   display:block;
-}
-a
-{
-  display:inline-block;
-  cursor:pointer;
-  padding:0 .5em;
 }
 table a
 {
@@ -114,6 +112,14 @@ tr:nth-child(odd) a,
 table a:hover
 {
   border-color:#345;
+}
+table td:nth-of-type(1)
+{
+  width:300px;
+}
+table td:nth-of-type(3)
+{
+  width:300px;
 }
 
 p
