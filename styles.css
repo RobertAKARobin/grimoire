@@ -80,22 +80,26 @@ td:nth-child(1)
 }
 a, #filter_select
 {
-  display:block;
   color:#345;
   margin:5px;
   line-height:2em;
+  height:2em;
   border-radius:3px;
   background-color:#fff;
   overflow:hidden;
 }
+h1 a
+{
+  display:block;
+}
 a
 {
+  display:inline-block;
   cursor:pointer;
   padding:0 .5em;
 }
 table a
 {
-  display:inline-block;
   border:1px solid transparent;
 }
 td:nth-child(1) a
@@ -128,11 +132,17 @@ h2
 }
 #filter_select
 {
-  height:6em;
+  display:block;
+  white-space:nowrap;
+}
+/*Sucks to be Firefox users.*/
+#filter_select::-webkit-scrollbar
+{
+  display:none;
 }
 #filter_select:hover
 {
-  overflow-y:scroll;
+  overflow-x:scroll;
 }
 #filter_select a
 {
