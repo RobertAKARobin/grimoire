@@ -50,7 +50,7 @@ function Grimoire(){
       container.insertBefore(filters.select, el);
       filters.list = Object.keys(filters.list);
       filters.list.sort();
-      filters.list.unshift("none");
+      filters.list.unshift(" ");
       filters.list.reverse();
       for(var f = filters.list.length - 1; f >= 0; f--){
         output += '<a class="tag">' + filters.list[f] + '</a>';
@@ -59,7 +59,7 @@ function Grimoire(){
     },
     go : function(){
       filters.current = this.innerText;
-      if(filters.current === "none"){
+      if(filters.current === " "){
         filters.toggler.innerText = "";
       }else{
         filters.toggler.innerText = 'tr:not([data-tags~=' + filters.current + ']){display:none;}';
