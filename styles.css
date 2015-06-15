@@ -78,31 +78,36 @@ td:nth-child(1)
   padding-right:30px;
   width:33%;
 }
-a
+a, #filter_select
 {
   display:block;
   color:#345;
-  padding:0 .5em;
   margin:5px;
   line-height:2em;
-  border:1px solid transparent;
   border-radius:3px;
   background-color:#fff;
-  cursor:hover;
+  overflow:hidden;
+}
+a
+{
+  cursor:pointer;
+  padding:0 .5em;
 }
 table a
 {
   display:inline-block;
+  border:1px solid transparent;
 }
 td:nth-child(1) a
 {
   color:black;
 }
-tr:nth-child(odd) a
+tr:nth-child(odd) a,
+#filter_select a:hover
 {
   background-color:#dde;
 }
-a:hover
+table a:hover
 {
   border-color:#345;
 }
@@ -113,4 +118,25 @@ p
   line-height:1.2em;
   color:#666;
   margin:5px;
+}
+h2
+{
+  text-align:center;
+  color:#999;
+  font-size:18px;
+  line-height:2em;
+}
+#filter_select
+{
+  height:6em;
+}
+#filter_select:hover
+{
+  overflow-y:scroll;
+}
+#filter_select a
+{
+  margin:0;
+  border-radius:0;
+  background-color:#ddd;
 }

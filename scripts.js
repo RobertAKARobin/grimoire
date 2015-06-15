@@ -1,73 +1,140 @@
-/* This code is ugly. You know it and I know it. */
+function Grimoire(){
+  var self = this,
+      container = {},
+      el = {},
+      all = [];
 
-
-var Ex = {
-  el : {},
-  fil : false,
-  all : [],
-  filters : {},
-  select : {},
-  pageNum : 1,
-  makeEl : function(type, html){
-    var el = document.createElement(type);
-    el.innerHTML = html;
-    return el;
-  },
-  get : function(){
-    var request = new XMLHttpRequest();
-    request.open('GET', "https://api.github.com/orgs/ga-dc/repos?per_page=100&page=" + Ex.pageNum, true);
-    request.onload = function(){
-      Ex.parse(JSON.parse(request.responseText));
-      if(request.getResponseHeader("link")){
-        Ex.pageNum++;
-        Ex.get();
-      }else{
-        Ex.render();
+  var render = {
+    el : function(type, html){
+      var el = document.createElement(type);
+      el.innerHTML = html;
+      return el;
+    },
+    repos : function(){
+      var ex, tr, td;
+      container.innerHTML = "";
+      el = render.el("TABLE", "");
+      container.appendChild(el);
+      all.sort(function(a, b){
+        if(a.name > b.name) return -1;
+        else return 1;
+      });
+      for(var r = all.length - 1; r >= 0; r--){
+        repo = all[r];
+        tr = document.createElement("TR");
+        tr.appendChild(render.el("TD", repo.render.name()));
+        tr.appendChild(render.el("TD", repo.render.desc()));
+        tr.appendChild(render.el("TD", repo.render.tags()));
+        if(repo.tags) tr.setAttribute("data-tags", repo.tags.join(" "));
+        el.appendChild(tr);
       }
     }
-    request.send();
-  },
-  parse: function(raw){
-    for(var r = raw.length - 1; r >= 0; r--){
-      var repo = raw[r];
-      this.all.push({
-        name: repo.name,
-        desc: repo.description
-      });
-    }
-  },
-  sortRepos : function(){
-    this.all.sort(function(a, b){
-      if(a.name > b.name) return -1;
-      else return 1;
-    });
-  },
-  renderRepos : function(filter){
-    var ex, tr, td;
-    this.el.innerHTML = "";
-    for(var r = this.all.length - 1; r >= 0; r--){
-      repo = this.all[r];
-      tr = document.createElement("TR");
-      tr.appendChild(this.makeEl("TD", this.renderRepo(repo)));
-      tr.appendChild(this.makeEl("TD", this.renderDesc(repo)));
-      this.el.appendChild(tr);
-    }
-  },
-  renderDesc : function(repo){
-    return "<p>" + (repo.desc ? repo.desc : "") + "</p>";
-  },
-  renderRepo : function(repo){
-    return '<a target="_blank" href="http://github.com/ga-dc/' + repo.name + '">' + repo.name + '</a>';
-  },
-  fetch : function(){
-    Ex.el = document.getElementById("exes");
-    Ex.select = document.getElementById("filters"),
-    Ex.get();
-  },
-  render : function(){
-    Ex.sortRepos();
-    Ex.renderRepos();
   }
-}
 
-window.onload = Ex.fetch;
+  var filters = {
+    current : "",
+    toggler : {},
+    list : {},
+    select : {},
+    add : function(){
+      filters.dropdown();
+      var tags = document.querySelectorAll(".tag");
+      for(var t = tags.length - 1; t >= 0; t--){
+        tags[t].addEventListener("click", filters.go);
+      }
+    },
+    dropdown : function(){
+      filters.select = document.createElement("DIV");
+      filters.select.id = "filter_select";
+      container.insertBefore(filters.select, el);
+      filters.list = Object.keys(filters.list);
+      filters.list.sort();
+      filters.list.unshift("none");
+      filters.list.reverse();
+      for(var f = filters.list.length - 1; f >= 0; f--){
+        filters.select.innerHTML += '<a class="tag">' + filters.list[f] + '</a>';
+      }
+    },
+    go : function(){
+      filters.current = this.innerText;
+      if(filters.current === "none"){
+        filters.toggler.innerText = "";
+      }else{
+        filters.toggler.innerText = 'tr:not([data-tags~=' + filters.current + ']){display:none;}';
+      }
+    }
+  }
+
+  function Repo(name, desc, tags){
+    var repo = this;
+    this.name = name;
+    this.desc = desc;
+    this.tags = tags;
+    this.render = {
+      desc : function(){
+        return "<p>" + (repo.desc ? repo.desc : "") + "</p>";
+      },
+      name : function(){
+        return '<a target="_blank" href="http://github.com/ga-dc/' + repo.name + '">' + repo.name + '</a>';
+      },
+      tags : function(){
+        if(!repo.tags) return "";
+        var output = "";
+        repo.tags.sort().reverse();
+        for(var t = repo.tags.length - 1; t >= 0; t--){
+          output += '<a class="tag">' + repo.tags[t] + '</a>';
+          filters.list[repo.tags[t]] = true;
+        }
+        return output;
+      }
+    }
+  }
+
+  var api = function(){
+    var pageNum = 1,
+        perPage = 100;
+
+    function url(){
+      return "https://api.github.com/orgs/ga-dc/repos?per_page=" + perPage + "&page=" + pageNum;
+    }
+
+    function parse(raw){
+      var repo, r, tags, tagMatcher = new RegExp(/\[[^\]]*\]/);
+      for(r = raw.length - 1; r >= 0; r--){
+        repo = raw[r];
+        tags = [];
+        if(repo.description){
+          tags = repo.description.match(tagMatcher);
+          repo.description = repo.description.replace(tagMatcher, "");
+          if(tags) tags = tags[0].toLowerCase().replace(/[\[\]]/g, "").split(/,[ ]*/);
+        }
+        all.push(new Repo(repo.name, repo.description, tags));
+      }
+    }
+
+    this.load = function(){
+      var request = new XMLHttpRequest();
+      request.open('GET', url(), true);
+      request.onload = function(){
+        parse(JSON.parse(request.responseText));
+        if(request.getResponseHeader("link")){
+          pageNum++;
+          api.load();
+        }else{
+          render.repos();
+          filters.add();
+        }
+      }
+      request.send();
+    }
+    return this;
+  }
+
+  this.init = function(elid){
+    container = document.getElementById(elid);
+    filters.toggler = document.createElement("STYLE");
+    document.head.appendChild(filters.toggler);
+    api().load();
+  }
+
+}
