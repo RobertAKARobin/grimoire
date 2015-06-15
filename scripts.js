@@ -13,14 +13,14 @@ var Ex = {
     el.innerHTML = html;
     return el;
   },
-  api : function(){
+  get : function(){
     var request = new XMLHttpRequest();
     request.open('GET', "https://api.github.com/orgs/ga-dc/repos?per_page=100&page=" + Ex.pageNum, true);
     request.onload = function(){
       Ex.parse(JSON.parse(request.responseText));
       if(request.getResponseHeader("link")){
         Ex.pageNum++;
-        Ex.api();
+        Ex.get();
       }else{
         Ex.render();
       }
@@ -62,7 +62,7 @@ var Ex = {
   fetch : function(){
     Ex.el = document.getElementById("exes");
     Ex.select = document.getElementById("filters"),
-    Ex.api();
+    Ex.get();
   },
   render : function(){
     Ex.sortRepos();
