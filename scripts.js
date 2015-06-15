@@ -44,6 +44,7 @@ function Grimoire(){
       }
     },
     dropdown : function(){
+      var output = "";
       filters.select = document.createElement("DIV");
       filters.select.id = "filter_select";
       container.insertBefore(filters.select, el);
@@ -52,8 +53,9 @@ function Grimoire(){
       filters.list.unshift("none");
       filters.list.reverse();
       for(var f = filters.list.length - 1; f >= 0; f--){
-        filters.select.innerHTML += '<a class="tag">' + filters.list[f] + '</a>';
+        output += '<a class="tag">' + filters.list[f] + '</a>';
       }
+      filters.select.innerHTML = output;
     },
     go : function(){
       filters.current = this.innerText;
@@ -92,10 +94,11 @@ function Grimoire(){
 
   var api = function(){
     var pageNum = 1,
-        perPage = 100;
+        perPage = 100,
+        org;
 
     function url(){
-      return "https://api.github.com/orgs/ga-dc/repos?per_page=" + perPage + "&page=" + pageNum;
+      return "https://api.github.com/orgs/" + api.org + "/repos?per_page=" + perPage + "&page=" + pageNum;
     }
 
     function parse(raw){
@@ -130,7 +133,8 @@ function Grimoire(){
     return this;
   }
 
-  this.init = function(elid){
+  this.init = function(elid, org){
+    api.org = org;
     container = document.getElementById(elid);
     filters.toggler = document.createElement("STYLE");
     document.head.appendChild(filters.toggler);
