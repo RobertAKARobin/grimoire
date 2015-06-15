@@ -1,7 +1,11 @@
 # Grimoire
 
-A "table of contents" for exercises, quizzes, warm-ups, etc
+A streamlined search tool for repos in this org.
 
-Just update the `all.csv` file with new lessons, and push to `gh-pages`.
+Create tags by putting a CSV of keywords in a repo's description.
+
+For example:
+
+> A streamline search tool for repos in this org. [search, filter, tags]
 
 https://ga-dc.github.io/grimoire
