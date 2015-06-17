@@ -22,6 +22,7 @@ function Grimoire(){
       for(var r = all.length - 1; r >= 0; r--){
         repo = all[r];
         tr = document.createElement("TR");
+        tr.appendChild(render.el("TD", repo.render.star()));
         tr.appendChild(render.el("TD", repo.render.name()));
         tr.appendChild(render.el("TD", repo.render.desc()));
         tr.appendChild(render.el("TD", repo.render.tags()));
@@ -67,17 +68,24 @@ function Grimoire(){
     }
   }
 
-  function Repo(name, desc, tags){
+  function Repo(name, desc, tags, star){
     var repo = this;
     this.name = name;
     this.desc = desc;
     this.tags = tags;
+    this.star = star;
     this.render = {
       desc : function(){
         return "<p>" + (repo.desc ? repo.desc : "") + "</p>";
       },
       name : function(){
         return '<a target="_blank" href="http://github.com/ga-dc/' + repo.name + '">' + repo.name + '</a>';
+      },
+      star : function(){
+        if(repo.star === 0){
+          return "";
+        }
+        return "<p>&star;" + repo.star + "</p>";
       },
       tags : function(){
         if(!repo.tags) return "";
@@ -95,7 +103,7 @@ function Grimoire(){
   var api = {
     url : "",
     parse : function(raw){
-      var repo, r, tags, tagMatcher = new RegExp(/\[[^\]]*\]/);
+      var repo, r, tags, tagMatcher = new RegExp(/\[[^\]]*\]/), star;
       for(r = raw.length - 1; r >= 0; r--){
         repo = raw[r];
         tags = [];
@@ -104,7 +112,7 @@ function Grimoire(){
           repo.description = repo.description.replace(tagMatcher, "");
           if(tags) tags = tags[0].toLowerCase().replace(/[\[\]]/g, "").split(/,[ ]*/);
         }
-        all.push(new Repo(repo.name, repo.description, tags));
+        all.push(new Repo(repo.name, repo.description, tags, repo.stargazers_count));
       }
     },
     load : function(){
