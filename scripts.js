@@ -102,6 +102,8 @@ function Grimoire(){
 
   var api = {
     url : "",
+    links : {},
+    max : 0,
     parse : function(raw){
       var repo, r, tags, tagMatcher = new RegExp(/\[[^\]]*\]/), star;
       for(r = raw.length - 1; r >= 0; r--){
@@ -119,15 +121,23 @@ function Grimoire(){
       var request = new XMLHttpRequest();
       request.open('GET', api.url, true);
       request.onload = function(){
+        var link;
         api.parse(JSON.parse(request.responseText));
         var links = request.getResponseHeader("link").split(",");
-        var next = links[0].substring(1, links[0].length - 13);
-        var last = links[1].substring(2, links[1].length - 13);
-        if(next === last){
+        for(var l = 0; l < links.length; l++){
+          link = links[l].replace(/[\<\> \"]/g, "").split(";rel=");
+          api.links[link[1]] = link[0];
+        }
+        api.max++;
+        if(api.max >= 50){
+          console.dir(api);
+          return false;
+        }
+        if(api.url === api.links.last){
           render.repos();
           filters.add();
         }else{
-          api.url = next;
+          api.url = api.links.next;
           api.load();
         }
       }
