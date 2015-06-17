@@ -92,16 +92,9 @@ function Grimoire(){
     }
   }
 
-  var api = function(){
-    var pageNum = 1,
-        perPage = 100,
-        org;
-
-    function url(){
-      return "https://api.github.com/orgs/" + api.org + "/repos?per_page=" + perPage + "&page=" + pageNum;
-    }
-
-    function parse(raw){
+  var api = {
+    url : "",
+    parse : function(raw){
       var repo, r, tags, tagMatcher = new RegExp(/\[[^\]]*\]/);
       for(r = raw.length - 1; r >= 0; r--){
         repo = raw[r];
@@ -113,32 +106,33 @@ function Grimoire(){
         }
         all.push(new Repo(repo.name, repo.description, tags));
       }
-    }
-
-    this.load = function(){
+    },
+    load : function(){
       var request = new XMLHttpRequest();
-      request.open('GET', url(), true);
+      request.open('GET', api.url, true);
       request.onload = function(){
-        parse(JSON.parse(request.responseText));
-        if(request.getResponseHeader("link")){
-          pageNum++;
-          api.load();
-        }else{
+        api.parse(JSON.parse(request.responseText));
+        var links = request.getResponseHeader("link").split(",");
+        var next = links[0].substring(1, links[0].length - 13);
+        var last = links[1].substring(2, links[1].length - 13);
+        if(next === last){
           render.repos();
           filters.add();
+        }else{
+          api.url = next;
+          api.load();
         }
       }
       request.send();
     }
-    return this;
   }
 
   this.init = function(elid, org){
-    api.org = org;
+    api.url = "https://api.github.com/orgs/ga-dc/repos?per_page=100&page=1";
     container = document.getElementById(elid);
     filters.toggler = document.createElement("STYLE");
     document.head.appendChild(filters.toggler);
-    api().load();
+    api.load();
   }
 
 }
