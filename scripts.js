@@ -1,4 +1,4 @@
-function Grimoire(){
+function Gringotts(){
   var self = this,
       container = {},
       el = {},

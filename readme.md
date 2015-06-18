@@ -1,4 +1,4 @@
-# Grimoire
+# Gringotts
 
 A streamlined search tool for repos in this org.
 
@@ -10,7 +10,7 @@ For example:
 
 Please feel free to update/rename tags!
 
-https://ga-dc.github.io/grimoire
+https://ga-dc.github.io/gringotts
 
 ## Tags of note:
 
