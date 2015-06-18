@@ -22,9 +22,9 @@ function Gringotts(){
       for(var r = all.length - 1; r >= 0; r--){
         repo = all[r];
         tr = document.createElement("TR");
-        tr.appendChild(render.el("TD", repo.render.star()));
         tr.appendChild(render.el("TD", repo.render.name()));
         tr.appendChild(render.el("TD", repo.render.desc()));
+        tr.appendChild(render.el("TD", repo.render.star()));
         tr.appendChild(render.el("TD", repo.render.tags()));
         if(repo.tags) tr.setAttribute("data-tags", repo.tags.join(" "));
         el.appendChild(tr);
@@ -136,6 +136,7 @@ function Gringotts(){
         if(api.url === api.links.last){
           render.repos();
           filters.add();
+          console.log(request.getAllResponseHeaders());
         }else{
           api.url = api.links.next;
           api.load();
