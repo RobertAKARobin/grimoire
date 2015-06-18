@@ -1,4 +1,4 @@
-function Grimoire(){
+function Gringotts(){
   var self = this,
       container = {},
       el = {},
@@ -22,6 +22,7 @@ function Grimoire(){
       for(var r = all.length - 1; r >= 0; r--){
         repo = all[r];
         tr = document.createElement("TR");
+        tr.appendChild(render.el("TD", repo.render.star()));
         tr.appendChild(render.el("TD", repo.render.name()));
         tr.appendChild(render.el("TD", repo.render.desc()));
         tr.appendChild(render.el("TD", repo.render.tags()));
@@ -67,17 +68,24 @@ function Grimoire(){
     }
   }
 
-  function Repo(name, desc, tags){
+  function Repo(name, desc, tags, star){
     var repo = this;
     this.name = name;
     this.desc = desc;
     this.tags = tags;
+    this.star = star;
     this.render = {
       desc : function(){
         return "<p>" + (repo.desc ? repo.desc : "") + "</p>";
       },
       name : function(){
         return '<a target="_blank" href="http://github.com/ga-dc/' + repo.name + '">' + repo.name + '</a>';
+      },
+      star : function(){
+        if(repo.star === 0){
+          return "";
+        }
+        return "<p>&star;" + repo.star + "</p>";
       },
       tags : function(){
         if(!repo.tags) return "";
@@ -92,17 +100,12 @@ function Grimoire(){
     }
   }
 
-  var api = function(){
-    var pageNum = 1,
-        perPage = 100,
-        org;
-
-    function url(){
-      return "https://api.github.com/orgs/" + api.org + "/repos?per_page=" + perPage + "&page=" + pageNum;
-    }
-
-    function parse(raw){
-      var repo, r, tags, tagMatcher = new RegExp(/\[[^\]]*\]/);
+  var api = {
+    url : "",
+    links : {},
+    max : 0,
+    parse : function(raw){
+      var repo, r, tags, tagMatcher = new RegExp(/\[[^\]]*\]/), star;
       for(r = raw.length - 1; r >= 0; r--){
         repo = raw[r];
         tags = [];
@@ -111,34 +114,43 @@ function Grimoire(){
           repo.description = repo.description.replace(tagMatcher, "");
           if(tags) tags = tags[0].toLowerCase().replace(/[\[\]]/g, "").split(/,[ ]*/);
         }
-        all.push(new Repo(repo.name, repo.description, tags));
+        all.push(new Repo(repo.name, repo.description, tags, repo.stargazers_count));
       }
-    }
-
-    this.load = function(){
+    },
+    load : function(){
       var request = new XMLHttpRequest();
-      request.open('GET', url(), true);
+      request.open('GET', api.url, true);
       request.onload = function(){
-        parse(JSON.parse(request.responseText));
-        if(request.getResponseHeader("link")){
-          pageNum++;
-          api.load();
-        }else{
+        var link;
+        api.parse(JSON.parse(request.responseText));
+        var links = request.getResponseHeader("link").split(",");
+        for(var l = 0; l < links.length; l++){
+          link = links[l].replace(/[\<\> \"]/g, "").split(";rel=");
+          api.links[link[1]] = link[0];
+        }
+        api.max++;
+        if(api.max >= 50){
+          console.dir(api);
+          return false;
+        }
+        if(api.url === api.links.last){
           render.repos();
           filters.add();
+        }else{
+          api.url = api.links.next;
+          api.load();
         }
       }
       request.send();
     }
-    return this;
   }
 
   this.init = function(elid, org){
-    api.org = org;
+    api.url = "https://api.github.com/orgs/ga-dc/repos?per_page=100&page=1";
     container = document.getElementById(elid);
     filters.toggler = document.createElement("STYLE");
     document.head.appendChild(filters.toggler);
-    api().load();
+    api.load();
   }
 
 }
