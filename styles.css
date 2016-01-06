@@ -140,8 +140,3 @@ h2
   white-space:nowrap;
   overflow-x:scroll;
 }
-/*Sucks to be Firefox users.*/
-#filter_select::-webkit-scrollbar
-{
-  display:none;
-}
